@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="9c87fb7d-e29a-457a-bbd5-4aab4fcf5f6c" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="choicerouter2Flow" doc:id="c017ef38-d6c4-4681-822a-630cb201ef3c" >
+		<http:listener doc:name="Listener" doc:id="047e72a3-f5e4-4474-bfdb-06dcd3654a09" config-ref="HTTP_Listener_config" path="/choicerouter2"/>
+		<logger level="INFO" doc:name="Logger" doc:id="11373ba4-5975-4494-ac8f-a50eba473b9a" message="Incomingrequest :: #[payload]"/>
+		<choice doc:name="Choice" doc:id="7933a716-7f59-4e73-bb1d-4301725a061a" >
+			<when expression='#[payload.question == "how old are you?"]'>
+				<ee:transform doc:name="Transform Message" doc:id="6867718d-964b-4885-9cd2-4c99ca71712a" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status": "allow the question for meeting"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="196e7d41-3f81-4ffb-8ae7-8b52866bf28b" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status": "pls come up with proper question"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
